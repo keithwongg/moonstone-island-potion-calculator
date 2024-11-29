@@ -1,0 +1,7 @@
+.caps {
+    text-transform: capitalize;
+}
+
+table, th, td {
+    border: 1px, solid;
+}

@@ -99,34 +99,91 @@ init().then((sqlite3) => {
         resultRows: rows,
     });
     */
-   setCropsDropdownValues(db);
-
+   const data = getCropsDataFromDb(db);
+   setCropsDropdownValues(data);
+   setCropsReferenceTable(data);
 });
 
-function setCropsDropdownValues(db)
+function getCropsDataFromDb(db)
 {
-    const sql = "select id, name from crops";
+    const sql = "select * from crops";
     let rows = [];
     db.exec({
         sql,
         rowMode: "object",
         resultRows: rows,
     });
-    console.log(rows);
+    console.log(rows.length);
+    return rows;
+}
 
+function setCropsDropdownValues(data)
+{
     // set to 2 dropdowns
     const firstDropdown = document.getElementById("crop-1");
     const secondDropdown = document.getElementById("crop-2");
-    populateDropdownWithData(rows, firstDropdown)
-    populateDropdownWithData(rows, secondDropdown)
+    populateDropdownWithData(data, firstDropdown)
+    populateDropdownWithData(data, secondDropdown)
 }
 
-function populateDropdownWithData(arr, dropdownElement)
+function populateDropdownWithData(data, dropdownElement)
 {
-    arr.forEach(crop => {
+    data.forEach(crop => {
         let option = document.createElement("option");
         option.value = crop.id;
         option.text = crop.name;
         dropdownElement.appendChild(option);
+    })
+}
+
+function setCropsReferenceTable(data)
+{
+    let tbody = document.getElementById("crops-ref-table-body")
+    data.forEach(crop => {
+        let tableRow = document.createElement("tr")
+        for(let prop in crop) {
+            if (prop.toString().includes("reharvest_bool") ||
+                prop.toString().includes("sell_price")) {
+                continue
+            }
+
+            if (prop.toString().includes("location")) {
+                let location = document.createElement("td")
+                location.class = "caps"
+                for (let e in LOCATIONS) {
+                    if (LOCATIONS[e] === crop.location) {
+                        location.innerHTML = e.toString()
+                    }
+                }
+                tableRow.appendChild(location)
+                continue
+            }
+
+            if (prop.toString().includes("season")) {
+                let seasons = document.createElement("td")
+                seasons.class = "caps"
+                for (let e in SEASONS) {
+                    if (SEASONS[e] === crop.season) {
+                        console.log(e.toString())
+                        seasons.innerHTML = e.toString()
+                    }
+                }
+                tableRow.appendChild(seasons)
+                continue
+            }
+
+            if (prop.toString().includes("reharvest_days")) {
+                let reharvest = document.createElement("td")
+                reharvest.innerHTML = crop.reharvest_bool ? `Days: ${crop.reharvest_days}` : `No`;
+                tableRow.appendChild(reharvest)
+                continue
+            }
+
+            // all other properties
+            let tableData = document.createElement("td")
+            tableData.innerHTML = crop[prop]
+            tableRow.appendChild(tableData)
+        }
+        tbody.appendChild(tableRow)
     })
 }
