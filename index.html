@@ -10,7 +10,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="index.js"></script>
   </head>
-  <body class="m-6 bg-gradient-to-r from-blue-100 to-blue-50">
+  <body class="m-6 max-w-screen-lg bg-gradient-to-r from-blue-100 to-blue-50">
     <header>
       <div class="bg-contain bg-left bg-no-repeat h-60 max-w-full" style="background-image: url(images/moonstone-banner.jpg);"></div>
       <div>
@@ -53,39 +53,23 @@
       </div>
       <div class="mt-4 hide" id="calculated-container">
         <h2 class="text-xl font-bold underline">Calculated Stats</h2>
-        <div class="custom-row">
-          <div class="custom-col">
-            <p>Stamina</p>
-            <p id="total-stamina"></p>
-          </div>
-          <div class="custom-col">
-            <p>Hp</p>
-            <p id="total-hp"></p>
-          </div>
-          <div class="custom-col">
-            <p>Exp</p>
-            <p id="total-exp"></p>
-          </div>
-          <div class="custom-col">
-            <p>Armor</p>
-            <p id="total-armor"></p>
-          </div>
-          <div class="custom-col">
-            <p>Speed</p>
-            <p id="total-speed"></p>
-          </div>
-          <div class="custom-col">
-            <p>Vitality</p>
-            <p id="total-vitality"></p>
-          </div>
-          <div class="custom-col">
-            <p>Power</p>
-            <p id="total-power"></p>
-          </div>
-          <div class="custom-col">
-            <p>Tame</p>
-            <p id="total-tame"></p>
-          </div>
+        <div class="max-w-full overflow-x-auto">
+          <table class="table-auto">
+            <tbody id="concoction-results">
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Stamina</th>
+                <th>Hp</th>
+                <th>Exp</th>
+                <th>Armor</th>
+                <th>Speed</th>
+                <th>Vitality</th>
+                <th>Power</th>
+                <th>Tame</th>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>

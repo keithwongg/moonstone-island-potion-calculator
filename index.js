@@ -77,7 +77,7 @@ insert into crops values
 (56, 'Snowdrop Flower', 7, 4, 180, 13, false, 0, 40, 0, 500, 0, 0, 0, 0, 100);
 `;
 var db = undefined;
-var dropdownCrops = {1: undefined, 2: undefined};
+var dropdownCrops = { 1: undefined, 2: undefined };
 
 window.onload = (evenet) => {
 
@@ -115,8 +115,7 @@ async function init() {
     return sqlite3;
 }
 
-function setCropsDropdownValues(data)
-{
+function setCropsDropdownValues(data) {
     // set to 2 dropdowns
     const firstDropdown = document.getElementById("crop-1");
     const secondDropdown = document.getElementById("crop-2");
@@ -124,8 +123,7 @@ function setCropsDropdownValues(data)
     populateDropdownWithData(data, secondDropdown)
 }
 
-function populateDropdownWithData(data, dropdownElement)
-{
+function populateDropdownWithData(data, dropdownElement) {
     data.forEach(crop => {
         let option = document.createElement("option")
         option.value = crop.name
@@ -134,33 +132,33 @@ function populateDropdownWithData(data, dropdownElement)
     })
 }
 
-function setCropsReferenceTable(data)
-{
+function setCropsReferenceTable(data) {
     let tbody = document.getElementById("crops-ref-table-body")
     data.forEach(crop => {
-        let tableRow = document.createElement("tr")
         let colsToSkip = ["reharvest_bool", "sell_price"]
-        setCropDataToTableRow(crop, tableRow, colsToSkip)
+        let tableRow = setCropDataToTableRow(crop, colsToSkip)
         tbody.appendChild(tableRow)
     })
 }
 
-function setCropDataToTableRow(crop, tableRow, skipColumns) {
-    for(let prop in crop) {
+function setCropDataToTableRow(crop, skipColumns = [], isConcoction = false) {
+    let tableRow = document.createElement("tr")
+    for (let prop in crop) {
         let isSkipCol = (col) => prop.toString().includes(col)
-        if (skipColumns.some(isSkipCol)) {
+        if (skipColumns.length > 0 && skipColumns.some(isSkipCol)) {
             continue
         }
-        
-        if (prop.toString().includes("id")){
+
+        if (prop.toString().includes("id")) {
             let tData = document.createElement("td")
             let cropName = "";
             crop.name.split(" ").forEach(word => {
                 cropName += word
             })
             let image = document.createElement("img")
-            image.src = `images/50px-${cropName}.webp`
+            image.src = isConcoction ? 'images/Concoction.png' : `images/50px-${cropName}.webp`
             image.alt = crop.Name
+            image.classList = isConcoction ? ['display-img-log'] : []
             tData.appendChild(image)
             tableRow.appendChild(tData)
             continue
@@ -202,6 +200,7 @@ function setCropDataToTableRow(crop, tableRow, skipColumns) {
         tableData.innerHTML = crop[prop]
         tableRow.appendChild(tableData)
     }
+    return tableRow
 }
 
 function selectDropdown(selectionId, cropElement) {
@@ -223,10 +222,12 @@ function clearUnselectedInputData() {
     clearSelectedCropTable(crop1, 1)
     clearSelectedCropTable(crop2, 2)
 
-    if (crop1 === undefined || crop2 === undefined) {
-        hideCalculatedStats(true)
+    if (crop1 !== undefined && crop2 !== undefined) {
         return;
     }
+
+    hideCalculatedStats(true)
+    clearConcoctionResults()
 }
 
 function clearSelectedCropTable(crop, id) {
@@ -234,6 +235,11 @@ function clearSelectedCropTable(crop, id) {
         let tBody = document.getElementById(`crop-selected-${id}`)
         tBody.innerHTML = ""
     }
+}
+
+function clearConcoctionResults() {
+    let tbody = document.getElementById("concoction-results")
+    tbody.innerHTML = ""
 }
 
 function hideCalculatedStats(isHide) {
@@ -251,29 +257,35 @@ function setCalculatedStats() {
 
     hideCalculatedStats(false)
 
-    let stamina = document.getElementById("total-stamina")
-    stamina.innerText = crop1.stamina + crop2.stamina
-
-    let hp = document.getElementById("total-hp")
-    hp.innerText = crop1.hp + crop2.hp
-
-    let exp = document.getElementById("total-exp")
-    exp.innerText = crop1.exp + crop2.exp
-
-    let armor = document.getElementById("total-armor")
-    armor.innerText = crop1.armor + crop2.armor
-
-    let speed = document.getElementById("total-speed")
-    speed.innerText = crop1.speed + crop2.speed
-
-    let vitality = document.getElementById("total-vitality")
-    vitality.innerText = crop1.vitality + crop2.vitality
-
-    let power = document.getElementById("total-power")
-    power.innerText = crop1.power + crop2.power
-
-    let tame = document.getElementById("total-tame")
-    tame.innerText = crop1.tame + crop2.tame
+    let tbody = document.getElementById("concoction-results")
+    // let colsToSkip = ["location", "season", "sell_price", "days_growth_time", "reharvest_bool", "reharvest_days"]
+    tbody.innerHTML =
+        ` <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Stamina</th>
+            <th>Hp</th>
+            <th>Exp</th>
+            <th>Armor</th>
+            <th>Speed</th>
+            <th>Vitality</th>
+            <th>Power</th>
+            <th>Tame</th>
+        </tr>`
+    let calculatedObject = {
+        id: 1000,
+        name: 'Concoction',
+        stamina: crop1.stamina + crop2.stamina,
+        hp: crop1.hp + crop2.hp,
+        exp: crop1.exp + crop2.exp,
+        armor: crop1.armor + crop2.armor,
+        speed: crop1.speed + crop2.speed,
+        vitality: crop1.vitality + crop2.vitality,
+        power: crop1.power + crop2.power,
+        tame: crop1.tame + crop2.tame
+    }
+    let tableRow = setCropDataToTableRow(calculatedObject, [], true)
+    tbody.appendChild(tableRow)
 }
 
 function selectCrop(selectionId, name) {
@@ -281,21 +293,20 @@ function selectCrop(selectionId, name) {
     dropdownCrops[selectionId] = crops[0]
     let tBody = document.getElementById(`crop-selected-${selectionId}`)
     tBody.innerHTML =
-            `<tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Stamina</th>
-              <th>Hp</th>
-              <th>Exp</th>
-              <th>Armor</th>
-              <th>Speed</th>
-              <th>Vitality</th>
-              <th>Power</th>
-              <th>Tame</th>
-            </tr>`
-    let tableRow = document.createElement("tr")
+        `<tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Stamina</th>
+            <th>Hp</th>
+            <th>Exp</th>
+            <th>Armor</th>
+            <th>Speed</th>
+            <th>Vitality</th>
+            <th>Power</th>
+            <th>Tame</th>
+        </tr>`
     let colsToSkip = ["location", "season", "sell_price", "days_growth_time", "reharvest_bool", "reharvest_days"]
-    setCropDataToTableRow(dropdownCrops[selectionId], tableRow, colsToSkip)
+    let tableRow = setCropDataToTableRow(dropdownCrops[selectionId], colsToSkip)
     setSelectedValueToInput(selectionId, name)
     tBody.appendChild(tableRow)
 }
@@ -315,8 +326,7 @@ function clearInput(id) {
 SQL QUERIES
 */
 // probably better to select specific cols
-function getCropsDataFromDb()
-{
+function getCropsDataFromDb() {
     const sql = "select * from crops";
     let rows = [];
     db.exec({

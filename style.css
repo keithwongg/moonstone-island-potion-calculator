@@ -28,3 +28,8 @@ td {
 .custom-row {
     display: flex;
 }
+
+.display-img-log {
+    max-height: 45px;
+    max-width: 45px;
+}
