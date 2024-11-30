@@ -85,36 +85,28 @@ insert into crops values
 (55, 'Gift Plant', 7, 4, 186, 14, false, 0, 40, 0, 1000, 0, 0, 0, 0, 0),
 (56, 'Snowdrop Flower', 7, 4, 180, 13, false, 0, 40, 0, 500, 0, 0, 0, 0, 100);
 `;
+var db = undefined;
 
-init().then((sqlite3) => {
-    const db = new sqlite3.oo1.DB();
-    db.exec(SCHEMA);
+window.onload = (evenet) => {
 
-    /*
-    const sql = "select * from crops where season = 2";
-    let rows = [];
-    db.exec({
-        sql,
-        rowMode: "object",
-        resultRows: rows,
+    init().then((sqlite3) => {
+        db = new sqlite3.oo1.DB();
+        db.exec(SCHEMA);
+
+        /*
+        const sql = "select * from crops where season = 2";
+        let rows = [];
+        db.exec({
+            sql,
+            rowMode: "object",
+            resultRows: rows,
+        });
+        */
+    const data = getCropsDataFromDb();
+    setCropsDropdownValues(data);
+    setCropsReferenceTable(data);
     });
-    */
-   const data = getCropsDataFromDb(db);
-   setCropsDropdownValues(data);
-   setCropsReferenceTable(data);
-});
 
-function getCropsDataFromDb(db)
-{
-    const sql = "select * from crops";
-    let rows = [];
-    db.exec({
-        sql,
-        rowMode: "object",
-        resultRows: rows,
-    });
-    console.log(rows.length);
-    return rows;
 }
 
 function setCropsDropdownValues(data)
@@ -141,62 +133,120 @@ function setCropsReferenceTable(data)
     let tbody = document.getElementById("crops-ref-table-body")
     data.forEach(crop => {
         let tableRow = document.createElement("tr")
-        for(let prop in crop) {
-            if (prop.toString().includes("reharvest_bool") ||
-                prop.toString().includes("sell_price")) {
-                continue
-            }
-            
-            if (prop.toString().includes("id")){
-                let tData = document.createElement("td")
-                let cropName = "";
-                crop.name.split(" ").forEach(word => {
-                    cropName += word
-                })
-                let image = document.createElement("img")
-                image.src = `images/50px-${cropName}.webp`
-                image.alt = crop.Name
-                tData.appendChild(image)
-                tableRow.appendChild(tData)
-                continue
-            }
-
-            if (prop.toString().includes("location")) {
-                let location = document.createElement("td")
-                location.class = "caps"
-                for (let e in LOCATIONS) {
-                    if (LOCATIONS[e] === crop.location) {
-                        location.innerHTML = e.toString()
-                    }
-                }
-                tableRow.appendChild(location)
-                continue
-            }
-
-            if (prop.toString().includes("season")) {
-                let seasons = document.createElement("td")
-                seasons.class = "caps"
-                for (let e in SEASONS) {
-                    if (SEASONS[e] === crop.season) {
-                        seasons.innerHTML = e.toString()
-                    }
-                }
-                tableRow.appendChild(seasons)
-                continue
-            }
-
-            if (prop.toString().includes("reharvest_days")) {
-                let reharvest = document.createElement("td")
-                reharvest.innerHTML = crop.reharvest_bool ? `Days: ${crop.reharvest_days}` : `No`;
-                tableRow.appendChild(reharvest)
-                continue
-            }
-
-            // all other properties
-            let tableData = document.createElement("td")
-            tableData.innerHTML = crop[prop]
-            tableRow.appendChild(tableData)
-        }
+        let colsToSkip = ["reharvest_bool", "sell_price"]
+        setCropDataToTableRow(crop, tableRow, colsToSkip)
         tbody.appendChild(tableRow)
     })
+}
+
+function setCropDataToTableRow(crop, tableRow, skipColumns) {
+    for(let prop in crop) {
+        let isSkipCol = (col) => prop.toString().includes(col)
+        if (skipColumns.some(isSkipCol)) {
+            continue
+        }
+        
+        if (prop.toString().includes("id")){
+            let tData = document.createElement("td")
+            let cropName = "";
+            crop.name.split(" ").forEach(word => {
+                cropName += word
+            })
+            let image = document.createElement("img")
+            image.src = `images/50px-${cropName}.webp`
+            image.alt = crop.Name
+            tData.appendChild(image)
+            tableRow.appendChild(tData)
+            continue
+        }
+
+        if (prop.toString().includes("location")) {
+            let location = document.createElement("td")
+            location.class = "caps"
+            for (let e in LOCATIONS) {
+                if (LOCATIONS[e] === crop.location) {
+                    location.innerHTML = e.toString()
+                }
+            }
+            tableRow.appendChild(location)
+            continue
+        }
+
+        if (prop.toString().includes("season")) {
+            let seasons = document.createElement("td")
+            seasons.class = "caps"
+            for (let e in SEASONS) {
+                if (SEASONS[e] === crop.season) {
+                    seasons.innerHTML = e.toString()
+                }
+            }
+            tableRow.appendChild(seasons)
+            continue
+        }
+
+        if (prop.toString().includes("reharvest_days")) {
+            let reharvest = document.createElement("td")
+            reharvest.innerHTML = crop.reharvest_bool ? `Days: ${crop.reharvest_days}` : `No`;
+            tableRow.appendChild(reharvest)
+            continue
+        }
+
+        // all other properties
+        let tableData = document.createElement("td")
+        tableData.innerHTML = crop[prop]
+        tableRow.appendChild(tableData)
+    }
+}
+
+function selectCrop(selectionId, cropElement) {
+    let selectedCropId = cropElement.value
+    let crops = querySingleCrop(selectedCropId)
+    let tBody = document.getElementById(`crop-selected-${selectionId}`)
+    tBody.innerHTML =
+            `<tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Location</th>
+              <th>Season</th>
+              <th>Days Growth Time</th>
+              <th>Reharvest</th>
+              <th>Stamina</th>
+              <th>Hp</th>
+              <th>Exp</th>
+              <th>Armor</th>
+              <th>Speed</th>
+              <th>Vitality</th>
+              <th>Power</th>
+              <th>Tame</th>
+            </tr>`
+    let tableRow = document.createElement("tr")
+    let colsToSkip = ["location", "season", "sell_price", "days_growth_time", "reharvest_bool"]
+    setCropDataToTableRow(crops[0], tableRow, colsToSkip)
+    tBody.appendChild(tableRow)
+}
+
+// SQL QUERIES
+// probably better to select specific cols
+function getCropsDataFromDb()
+{
+    const sql = "select * from crops";
+    let rows = [];
+    db.exec({
+        sql,
+        rowMode: "object",
+        resultRows: rows,
+    });
+    console.log(rows.length);
+    return rows;
+}
+
+function querySingleCrop(id) {
+    const sql = `select * from crops where id = ${id}`;
+    let rows = [];
+    db.exec({
+        sql,
+        rowMode: "object",
+        resultRows: rows,
+    });
+    return rows
 }

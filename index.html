@@ -14,16 +14,32 @@
     <h3>Select 2 crops to get the desired resulting potion</h3>
     <div>
         <p>Crop 1</p>
-        <select name="crops" id="crop-1">
+        <select name="crops" id="crop-1" onChange="selectCrop(1, this)">
         </select>
+        <table>
+          <tbody id="crop-selected-1">
+
+          </tbody>
+        </table>
     </div>
     <div>
         <p>Crop 2</p>
-        <select name="crops" id="crop-2">
+        <select name="crops" id="crop-2" onChange="selectCrop(2, this)">
         </select>
+        <table>
+          <tbody id="crop-selected-2">
+
+          </tbody>
+        </table>
+    </div>
+    <div>
+      <p>Combined Stats</p>
+      <div></div>
     </div>
 
     <h3>Reference Table</h3>
+    <p>add some checkboxes for filtering here</p>
+    <p>Data retrieved from <a href="https://moonstoneisland.wiki.gg/wiki/Crops">the official wiki</a></p>
     <table>
       <tbody id="crops-ref-table-body">
       <tr>
