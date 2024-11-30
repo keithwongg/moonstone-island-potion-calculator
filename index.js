@@ -206,9 +206,6 @@ function selectCrop(selectionId, cropElement) {
             `<tr>
               <th>Image</th>
               <th>Name</th>
-              <th>Location</th>
-              <th>Season</th>
-              <th>Days Growth Time</th>
               <th>Reharvest</th>
               <th>Stamina</th>
               <th>Hp</th>
