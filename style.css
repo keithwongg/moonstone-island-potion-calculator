@@ -6,6 +6,16 @@ table, th, td {
     border: 1px, solid;
 }
 
-.crop-selected {
+.hide {
+    display: none;
+}
+
+.container-vertical {
+    display: flex;
+    flex-direction: column;
+    width: 40px;
+}
+
+.custom-row {
     display: flex;
 }

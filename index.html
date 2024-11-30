@@ -14,7 +14,7 @@
     <h3>Select 2 crops to get the desired resulting potion</h3>
     <div>
         <p>Crop 1</p>
-        <select name="crops" id="crop-1" onChange="selectCrop(1, this)">
+        <select name="crops" id="crop-1" onChange="selectDropdown(1, this)">
         </select>
         <table>
           <tbody id="crop-selected-1">
@@ -24,7 +24,7 @@
     </div>
     <div>
         <p>Crop 2</p>
-        <select name="crops" id="crop-2" onChange="selectCrop(2, this)">
+        <select name="crops" id="crop-2" onChange="selectDropdown(2, this)">
         </select>
         <table>
           <tbody id="crop-selected-2">
@@ -32,9 +32,42 @@
           </tbody>
         </table>
     </div>
-    <div>
-      <p>Combined Stats</p>
-      <div></div>
+    <div id="calculated-container" class="hide">
+      <p>Calculated Potion Stats</p>
+      <div class="custom-row">
+        <div class="custom-col">
+          <p>Total Stamina</p>
+          <p id="total-stamina"></p>
+        </div>
+        <div class="custom-col">
+          <p>Total Hp</p>
+          <p id="total-hp"></p>
+        </div>
+        <div class="custom-col">
+          <p>Total Exp</p>
+          <p id="total-exp"></p>
+        </div>
+        <div class="custom-col">
+          <p>Total Armor</p>
+          <p id="total-armor"></p>
+        </div>
+        <div class="custom-col">
+          <p>Total Speed</p>
+          <p id="total-speed"></p>
+        </div>
+        <div class="custom-col">
+          <p>Total Vitality</p>
+          <p id="total-vitality"></p>
+        </div>
+        <div class="custom-col">
+          <p>Total Power</p>
+          <p id="total-power"></p>
+        </div>
+        <div class="custom-col">
+          <p>Total Tame</p>
+          <p id="total-tame"></p>
+        </div>
+      </div>
     </div>
 
     <h3>Reference Table</h3>

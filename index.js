@@ -1,13 +1,4 @@
-// https://github.com/nalgeon/sqlean.js
-async function init() {
-    const sqlite3 = await sqlite3InitModule({
-        print: console.log,
-        printErr: console.error,
-    });
-    const version = sqlite3.capi.sqlite3_libversion();
-    console.log(`Loaded SQLite ${version}`);
-    return sqlite3;
-}
+// Enums
 const SEASONS = {
     SPRING: 1,
     SUMMER: 2,
@@ -86,6 +77,7 @@ insert into crops values
 (56, 'Snowdrop Flower', 7, 4, 180, 13, false, 0, 40, 0, 500, 0, 0, 0, 0, 100);
 `;
 var db = undefined;
+var dropdownCrops = {1: undefined, 2: undefined};
 
 window.onload = (evenet) => {
 
@@ -109,6 +101,17 @@ window.onload = (evenet) => {
 
 }
 
+// https://github.com/nalgeon/sqlean.js
+async function init() {
+    const sqlite3 = await sqlite3InitModule({
+        print: console.log,
+        printErr: console.error,
+    });
+    const version = sqlite3.capi.sqlite3_libversion();
+    console.log(`Loaded SQLite ${version}`);
+    return sqlite3;
+}
+
 function setCropsDropdownValues(data)
 {
     // set to 2 dropdowns
@@ -120,11 +123,14 @@ function setCropsDropdownValues(data)
 
 function populateDropdownWithData(data, dropdownElement)
 {
+    let emptyOption = document.createElement("option")
+    emptyOption.value = 0
+    dropdownElement.appendChild(emptyOption)
     data.forEach(crop => {
-        let option = document.createElement("option");
-        option.value = crop.id;
-        option.text = crop.name;
-        dropdownElement.appendChild(option);
+        let option = document.createElement("option")
+        option.value = crop.id
+        option.text = crop.name
+        dropdownElement.appendChild(option)
     })
 }
 
@@ -198,9 +204,63 @@ function setCropDataToTableRow(crop, tableRow, skipColumns) {
     }
 }
 
+function selectDropdown(selectionId, cropElement) {
+
+    selectCrop(selectionId, cropElement)
+    // check if both dropdown has values, if yes then automatically
+    // calculate the result and show.
+    // if no, then continue hiding the results section
+
+    let crop1 = dropdownCrops[1]
+    let crop2 = dropdownCrops[2]
+
+    if (crop1 === undefined) {
+        let tBody = document.getElementById(`crop-selected-1`)
+        tBody.innerHTML = ""
+    }
+    if (crop2 === undefined) {
+        let tBody = document.getElementById(`crop-selected-2`)
+        tBody.innerHTML = ""
+    }
+
+    let calculatedContainer = document.getElementById("calculated-container")
+    if (crop1 === undefined || crop2 === undefined) {
+        calculatedContainer.classList.add('hide')
+        return;
+    }
+
+    // passses, show block and calc the 2 crops
+    calculatedContainer.classList.remove('hide')
+
+    let stamina = document.getElementById("total-stamina")
+    stamina.innerText = crop1.stamina + crop2.stamina
+
+    let hp = document.getElementById("total-hp")
+    hp.innerText = crop1.hp + crop2.hp
+
+    let exp = document.getElementById("total-exp")
+    exp.innerText = crop1.exp + crop2.exp
+
+    let armor = document.getElementById("total-armor")
+    armor.innerText = crop1.armor + crop2.armor
+
+    let speed = document.getElementById("total-speed")
+    speed.innerText = crop1.speed + crop2.speed
+
+    let vitality = document.getElementById("total-vitality")
+    vitality.innerText = crop1.vitality + crop2.vitality
+
+    let power = document.getElementById("total-power")
+    power.innerText = crop1.power + crop2.power
+
+    let tame = document.getElementById("total-tame")
+    tame.innerText = crop1.tame + crop2.tame
+}
+
 function selectCrop(selectionId, cropElement) {
     let selectedCropId = cropElement.value
     let crops = querySingleCrop(selectedCropId)
+    dropdownCrops[selectionId] = crops[0]
     let tBody = document.getElementById(`crop-selected-${selectionId}`)
     tBody.innerHTML =
             `<tr>
@@ -218,9 +278,15 @@ function selectCrop(selectionId, cropElement) {
             </tr>`
     let tableRow = document.createElement("tr")
     let colsToSkip = ["location", "season", "sell_price", "days_growth_time", "reharvest_bool"]
-    setCropDataToTableRow(crops[0], tableRow, colsToSkip)
+    setCropDataToTableRow(dropdownCrops[selectionId], tableRow, colsToSkip)
     tBody.appendChild(tableRow)
 }
+
+function isBothDropdownSelected() {
+
+}
+
+
 
 // SQL QUERIES
 // probably better to select specific cols
