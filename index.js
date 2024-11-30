@@ -20,7 +20,7 @@ const SCHEMA = `
 create table crops(id, name, location, season, sell_price, days_growth_time, reharvest_bool, reharvest_days, stamina, hp, exp, armor, speed, vitality, power, tame);
 insert into crops values
 (1, 'Flax Flower', 1, 1, 20, 6, false, 0, 20, 0, 0, 0, 0, 0, 0, 10),
-(2, 'Stone Fruit', 1, 1, 20, 6, false, 0, 50, 0, 0, 0, 0, 0, 0, 0),
+(2, 'Stonefruit', 1, 1, 20, 6, false, 0, 50, 0, 0, 0, 0, 0, 0, 0),
 (3, 'Cat Tail', 2, 1, 15, 6, true, 3, 20, 0, 0, 0, 3, 0, 0, 0),
 (4, 'Lilypad', 2, 1, 15, 7, false, 0, 20, 15, 0, 0, 0, 0, 0, 0),
 (5, 'Mandrake', 3, 1, 50, 10, false, 0, -10, 0, 0, 0, 0, 0, -3, 0),
