@@ -146,6 +146,20 @@ function setCropsReferenceTable(data)
                 prop.toString().includes("sell_price")) {
                 continue
             }
+            
+            if (prop.toString().includes("id")){
+                let tData = document.createElement("td")
+                let cropName = "";
+                crop.name.split(" ").forEach(word => {
+                    cropName += word
+                })
+                let image = document.createElement("img")
+                image.src = `images/50px-${cropName}.webp`
+                image.alt = crop.Name
+                tData.appendChild(image)
+                tableRow.appendChild(tData)
+                continue
+            }
 
             if (prop.toString().includes("location")) {
                 let location = document.createElement("td")
@@ -164,7 +178,6 @@ function setCropsReferenceTable(data)
                 seasons.class = "caps"
                 for (let e in SEASONS) {
                     if (SEASONS[e] === crop.season) {
-                        console.log(e.toString())
                         seasons.innerHTML = e.toString()
                     }
                 }
