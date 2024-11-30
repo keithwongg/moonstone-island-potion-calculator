@@ -4,94 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Potion Calculator</title>
+    <title>Concoctions Calculator</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/@antonz/sqlean/dist/sqlean.js"></script>
-  </head>
-  <body>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="index.js"></script>
-    <h1>Moonstone Island Potion Calculator</h1>
-    <h3>Select 2 crops to get the desired resulting potion</h3>
-    <div>
-        <p>Crop 1</p>
-        <select name="crops" id="crop-1" onChange="selectDropdown(1, this)">
-        </select>
-        <table>
-          <tbody id="crop-selected-1">
-
-          </tbody>
-        </table>
-    </div>
-    <div>
-        <p>Crop 2</p>
-        <select name="crops" id="crop-2" onChange="selectDropdown(2, this)">
-        </select>
-        <table>
-          <tbody id="crop-selected-2">
-
-          </tbody>
-        </table>
-    </div>
-    <div id="calculated-container" class="hide">
-      <p>Calculated Potion Stats</p>
-      <div class="custom-row">
-        <div class="custom-col">
-          <p>Total Stamina</p>
-          <p id="total-stamina"></p>
-        </div>
-        <div class="custom-col">
-          <p>Total Hp</p>
-          <p id="total-hp"></p>
-        </div>
-        <div class="custom-col">
-          <p>Total Exp</p>
-          <p id="total-exp"></p>
-        </div>
-        <div class="custom-col">
-          <p>Total Armor</p>
-          <p id="total-armor"></p>
-        </div>
-        <div class="custom-col">
-          <p>Total Speed</p>
-          <p id="total-speed"></p>
-        </div>
-        <div class="custom-col">
-          <p>Total Vitality</p>
-          <p id="total-vitality"></p>
-        </div>
-        <div class="custom-col">
-          <p>Total Power</p>
-          <p id="total-power"></p>
-        </div>
-        <div class="custom-col">
-          <p>Total Tame</p>
-          <p id="total-tame"></p>
+  </head>
+  <body class="m-6 bg-gradient-to-r from-blue-100 to-blue-50">
+    <header>
+      <div class="bg-contain bg-left bg-no-repeat h-60 max-w-full" style="background-image: url(images/moonstone-banner.jpg);"></div>
+      <div>
+        <h1 class="mt-6 text-4xl font-bold">Concoctions Calculator</h1>
+        <image class="mt-6" src="images/AlchemyLab.webp"></image>
+      </div>
+    </header>
+    <br>
+    <section>
+      <h1 class="text-2xl font-bold">Select 2 crops to get the desired resulting concoction</h1>
+      <div class="mt-4">
+          <h2 class="text-xl font-bold">Crop 1</h2>
+          <div class="my-2 flex">
+            <input class="rounded-sm border-black border-2" type="text" id= "crop-1-input" list="crop-1" onChange="selectDropdown(1, this)">
+            <datalist name="crops" id="crop-1">
+            </datalist>
+            <button class="px-4 ml-4 rounded border-black border-2 bg-gray-300" button" onclick="clearInput(1)">Clear</button>
+          </div>
+          <div class="max-w-full overflow-x-auto">
+            <table class="table-auto max-w-full">
+              <tbody id="crop-selected-1">
+              </tbody>
+            </table>
+          </div>
+      </div>
+      <div class="mt-4">
+          <h2 class="text-xl font-bold">Crop 2</h2>
+          <div class="my-2 flex">
+            <input class="rounded-sm border-black border-2" type="text" id= "crop-2-input" list="crop-1" onChange="selectDropdown(2, this)">
+            <datalist name="crops" id="crop-2">
+            </datalist>
+            <button class="px-4 ml-4 rounded border-black border-2 bg-gray-300" type="button" onclick="clearInput(2)">Clear</button>
+          </div>
+          <div class="max-w-full overflow-x-auto">
+            <table class="table-auto">
+              <tbody id="crop-selected-2">
+              </tbody>
+            </table>
+          </div>
+      </div>
+      <div class="mt-4 hide" id="calculated-container">
+        <h2 class="text-xl font-bold underline">Calculated Stats</h2>
+        <div class="custom-row">
+          <div class="custom-col">
+            <p>Stamina</p>
+            <p id="total-stamina"></p>
+          </div>
+          <div class="custom-col">
+            <p>Hp</p>
+            <p id="total-hp"></p>
+          </div>
+          <div class="custom-col">
+            <p>Exp</p>
+            <p id="total-exp"></p>
+          </div>
+          <div class="custom-col">
+            <p>Armor</p>
+            <p id="total-armor"></p>
+          </div>
+          <div class="custom-col">
+            <p>Speed</p>
+            <p id="total-speed"></p>
+          </div>
+          <div class="custom-col">
+            <p>Vitality</p>
+            <p id="total-vitality"></p>
+          </div>
+          <div class="custom-col">
+            <p>Power</p>
+            <p id="total-power"></p>
+          </div>
+          <div class="custom-col">
+            <p>Tame</p>
+            <p id="total-tame"></p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <h3>Reference Table</h3>
-    <p>add some checkboxes for filtering here</p>
-    <p>Data retrieved from <a href="https://moonstoneisland.wiki.gg/wiki/Crops">the official wiki</a></p>
-    <table>
-      <tbody id="crops-ref-table-body">
-      <tr>
-        <th>Image</th>
-        <th>Name</th>
-        <th>Location</th>
-        <th>Season</th>
-        <th>Days Growth Time</th>
-        <th>Reharvest</th>
-        <th>Stamina</th>
-        <th>Hp</th>
-        <th>Exp</th>
-        <th>Armor</th>
-        <th>Speed</th>
-        <th>Vitality</th>
-        <th>Power</th>
-        <th>Tame</th>
-      </tr>
-      </tbody>
-    </table>
+    <br>
+
+    <section>
+      <h1 class="text-2xl font-bold">Reference Table</h1>
+      <p>add some checkboxes for filtering here</p>
+      <p>Data retrieved from <a class="text-blue-600" href="https://moonstoneisland.wiki.gg/wiki/Crops">the official wiki</a></p>
+      <div class="max-w-full overflow-x-auto">
+        <table class="table-auto">
+          <tbody id="crops-ref-table-body">
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Season</th>
+            <th>Days Growth Time</th>
+            <th>Reharvest</th>
+            <th>Stamina</th>
+            <th>Hp</th>
+            <th>Exp</th>
+            <th>Armor</th>
+            <th>Speed</th>
+            <th>Vitality</th>
+            <th>Power</th>
+            <th>Tame</th>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </body>
 </html>

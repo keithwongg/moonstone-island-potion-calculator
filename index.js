@@ -94,9 +94,12 @@ window.onload = (evenet) => {
             resultRows: rows,
         });
         */
-    const data = getCropsDataFromDb();
-    setCropsDropdownValues(data);
-    setCropsReferenceTable(data);
+        const data = getCropsDataFromDb();
+        setCropsDropdownValues(data);
+        setCropsReferenceTable(data);
+        selectCrop(1, "Flax Flower");
+        selectCrop(2, "Flax Flower");
+        setCalculatedStats()
     });
 
 }
@@ -123,13 +126,10 @@ function setCropsDropdownValues(data)
 
 function populateDropdownWithData(data, dropdownElement)
 {
-    let emptyOption = document.createElement("option")
-    emptyOption.value = 0
-    dropdownElement.appendChild(emptyOption)
     data.forEach(crop => {
         let option = document.createElement("option")
-        option.value = crop.id
-        option.text = crop.name
+        option.value = crop.name
+        // option.text = crop.name
         dropdownElement.appendChild(option)
     })
 }
@@ -206,31 +206,50 @@ function setCropDataToTableRow(crop, tableRow, skipColumns) {
 
 function selectDropdown(selectionId, cropElement) {
 
-    selectCrop(selectionId, cropElement)
+    let name = cropElement.value
+    selectCrop(selectionId, name)
     // check if both dropdown has values, if yes then automatically
     // calculate the result and show.
     // if no, then continue hiding the results section
 
+    clearUnselectedInputData()
+    setCalculatedStats()
+}
+
+function clearUnselectedInputData() {
     let crop1 = dropdownCrops[1]
     let crop2 = dropdownCrops[2]
 
-    if (crop1 === undefined) {
-        let tBody = document.getElementById(`crop-selected-1`)
-        tBody.innerHTML = ""
-    }
-    if (crop2 === undefined) {
-        let tBody = document.getElementById(`crop-selected-2`)
-        tBody.innerHTML = ""
-    }
+    clearSelectedCropTable(crop1, 1)
+    clearSelectedCropTable(crop2, 2)
 
-    let calculatedContainer = document.getElementById("calculated-container")
     if (crop1 === undefined || crop2 === undefined) {
-        calculatedContainer.classList.add('hide')
+        hideCalculatedStats(true)
         return;
     }
+}
 
-    // passses, show block and calc the 2 crops
+function clearSelectedCropTable(crop, id) {
+    if (crop === undefined) {
+        let tBody = document.getElementById(`crop-selected-${id}`)
+        tBody.innerHTML = ""
+    }
+}
+
+function hideCalculatedStats(isHide) {
+    let calculatedContainer = document.getElementById("calculated-container")
+    if (isHide) {
+        calculatedContainer.classList.add('hide')
+        return
+    }
     calculatedContainer.classList.remove('hide')
+}
+
+function setCalculatedStats() {
+    let crop1 = dropdownCrops[1]
+    let crop2 = dropdownCrops[2]
+
+    hideCalculatedStats(false)
 
     let stamina = document.getElementById("total-stamina")
     stamina.innerText = crop1.stamina + crop2.stamina
@@ -257,16 +276,14 @@ function selectDropdown(selectionId, cropElement) {
     tame.innerText = crop1.tame + crop2.tame
 }
 
-function selectCrop(selectionId, cropElement) {
-    let selectedCropId = cropElement.value
-    let crops = querySingleCrop(selectedCropId)
+function selectCrop(selectionId, name) {
+    let crops = querySingleCrop(name)
     dropdownCrops[selectionId] = crops[0]
     let tBody = document.getElementById(`crop-selected-${selectionId}`)
     tBody.innerHTML =
             `<tr>
               <th>Image</th>
               <th>Name</th>
-              <th>Reharvest</th>
               <th>Stamina</th>
               <th>Hp</th>
               <th>Exp</th>
@@ -277,18 +294,26 @@ function selectCrop(selectionId, cropElement) {
               <th>Tame</th>
             </tr>`
     let tableRow = document.createElement("tr")
-    let colsToSkip = ["location", "season", "sell_price", "days_growth_time", "reharvest_bool"]
+    let colsToSkip = ["location", "season", "sell_price", "days_growth_time", "reharvest_bool", "reharvest_days"]
     setCropDataToTableRow(dropdownCrops[selectionId], tableRow, colsToSkip)
+    setSelectedValueToInput(selectionId, name)
     tBody.appendChild(tableRow)
 }
 
-function isBothDropdownSelected() {
-
+function setSelectedValueToInput(selectionId, name) {
+    let input = document.getElementById(`crop-${selectionId}-input`)
+    input.value = name
 }
 
+function clearInput(id) {
+    setSelectedValueToInput(id, "")
+    dropdownCrops[id] = undefined
+    clearUnselectedInputData()
+}
 
-
-// SQL QUERIES
+/*
+SQL QUERIES
+*/
 // probably better to select specific cols
 function getCropsDataFromDb()
 {
@@ -303,8 +328,8 @@ function getCropsDataFromDb()
     return rows;
 }
 
-function querySingleCrop(id) {
-    const sql = `select * from crops where id = ${id}`;
+function querySingleCrop(name) {
+    const sql = `select * from crops where name = '${name}'`;
     let rows = [];
     db.exec({
         sql,
